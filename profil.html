@@ -327,7 +327,7 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         </div>
         <div class="setting-row">
           <span class="setting-label">Slet konto</span>
-          <a href="#" style="font-size:13px;color:var(--red);text-decoration:none;">Slet →</a>
+          <a href="#" style="font-size:13px;color:var(--red);text-decoration:none;">Slet →</a></div><div class="setting-row"><span class="setting-label">Log ud</span><a href="#" onclick="logout()" style="font-size:13px;color:var(--ink-3);text-decoration:none;">Log ud →</a>
         </div>
       </div>
     </div>
@@ -347,6 +347,61 @@ function showTab(id) {
 document.querySelectorAll('.toggle').forEach(t => {
   t.addEventListener('click', () => t.classList.toggle('off'));
 });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const { createClient } = supabase
+const _sb = createClient('https://dgsgugorolenijuqkajq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY')
+
+async function loadProfile() {
+  const { data: { session } } = await _sb.auth.getSession()
+  if (!session) { window.location.href = 'login.html'; return }
+
+  const user = session.user
+  const { data: profile } = await _sb.from('profiles').select('*').eq('id', user.id).single()
+  
+  if (profile) {
+    const name = profile.first_name + ' ' + profile.last_name
+    document.querySelectorAll('.profile-avatar').forEach(el => {
+      const initials = (profile.first_name[0] || '') + (profile.last_name[0] || '')
+      el.textContent = initials.toUpperCase()
+    })
+    document.querySelector('.profile-info h1').textContent = name
+    if (profile.city) {
+      document.querySelector('.profile-meta span').textContent = profile.city + ', Danmark'
+    }
+    if (profile.swap_count !== undefined) {
+      document.querySelector('#tab-mine-boliger').closest('.page').querySelectorAll('.pstat-num')[0].textContent = profile.swap_count
+    }
+    if (profile.rating_avg > 0) {
+      document.querySelectorAll('.pstat-num')[3].textContent = profile.rating_avg
+    }
+  }
+
+  // Load properties
+  const { data: properties } = await _sb.from('properties')
+    .select('*')
+    .eq('owner_id', user.id)
+    .order('created_at', { ascending: false })
+
+  if (properties && properties.length > 0) {
+    const grid = document.querySelector('.my-props')
+    // Update existing card or add new ones
+    const firstCard = grid.querySelector('.my-prop')
+    if (firstCard && properties[0]) {
+      firstCard.querySelector('.my-prop-name').textContent = properties[0].title
+      firstCard.querySelector('.my-prop-meta').textContent = properties[0].city + ' · ' + properties[0].bedrooms + ' sov. · ' + (properties[0].sqm || '?') + ' m²'
+    }
+  }
+}
+
+async function logout() {
+  await _sb.auth.signOut()
+  window.location.href = 'index.html'
+}
+
+loadProfile()
 </script>
 </body>
 </html>

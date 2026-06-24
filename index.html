@@ -576,7 +576,7 @@ footer { background: #0F2219; padding: 48px; display: flex; align-items: center;
   <p>Skriv dig op og vær blandt de første til at prøve Homli når vi åbner.</p>
   <div class="waitlist-form">
     <input class="waitlist-input" type="email" placeholder="din@email.dk">
-    <button class="waitlist-btn">Skriv mig op</button>
+    <button class="waitlist-btn" onclick="joinWaitlist()">Skriv mig op</button>
   </div>
   <div class="waitlist-note">Ingen spam. Kun en besked når vi er klar.</div>
 </section>
@@ -610,5 +610,46 @@ footer { background: #0F2219; padding: 48px; display: flex; align-items: center;
   <div class="footer-copy">© 2025 Homli. Alle rettigheder forbeholdes.</div>
 </footer>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const { createClient } = supabase
+const _sb = createClient('https://dgsgugorolenijuqkajq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY')
+
+async function joinWaitlist() {
+  const input = document.querySelector('.waitlist-input')
+  const btn = document.querySelector('.waitlist-btn')
+  const email = input.value.trim()
+  
+  if (!email || !email.includes('@')) {
+    input.style.borderColor = '#D94040'
+    input.placeholder = 'Skriv en gyldig email'
+    return
+  }
+  
+  btn.textContent = '...'
+  btn.disabled = true
+  input.disabled = true
+
+  const { error } = await _sb.from('waitlist').insert({ email })
+  
+  if (error && error.code === '23505') {
+    // Already signed up
+    input.style.borderColor = '#4A9B6F'
+    btn.textContent = '✓ Allerede tilmeldt!'
+    btn.style.background = '#4A9B6F'
+  } else if (error) {
+    btn.textContent = 'Prøv igen'
+    btn.disabled = false
+    input.disabled = false
+  } else {
+    input.style.display = 'none'
+    btn.textContent = '✓ Du er tilmeldt!'
+    btn.style.background = '#4A9B6F'
+    btn.style.cursor = 'default'
+    document.querySelector('.waitlist-note').textContent = 'Tak! Vi giver dig besked når Homli åbner. 🏡'
+  }
+}
+</script>
 </body>
 </html>

@@ -121,14 +121,14 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         <p class="form-sub">Log ind for at se dine bytter og beskeder</p>
         <div class="field">
           <label>Email</label>
-          <input type="email" placeholder="din@email.dk">
+          <input type="email" id="login-email" placeholder="din@email.dk">
         </div>
         <div class="field">
           <label>Adgangskode</label>
-          <input type="password" placeholder="••••••••">
+          <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginUser()">
         </div>
-        <a href="#" class="forgot">Glemt adgangskode?</a>
-        <button class="btn-full">Log ind</button>
+        <a href="#" class="forgot" onclick="event.preventDefault();resetPassword()">Glemt adgangskode?</a>
+        <button class="btn-full" id="login-btn" onclick="loginUser()">Log ind</button>
         <div class="divider"><div class="divider-line"></div><span>eller</span><div class="divider-line"></div></div>
         <button class="btn-mitid">
           <div class="mitid-logo">M</div>
@@ -143,26 +143,26 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         <div class="field-row">
           <div class="field">
             <label>Fornavn</label>
-            <input type="text" placeholder="Magnus">
+            <input type="text" id="signup-firstname" placeholder="Magnus">
           </div>
           <div class="field">
             <label>Efternavn</label>
-            <input type="text" placeholder="Jensen">
+            <input type="text" id="signup-lastname" placeholder="Jensen">
           </div>
         </div>
         <div class="field">
           <label>Email</label>
-          <input type="email" placeholder="din@email.dk">
+          <input type="email" id="signup-email" placeholder="din@email.dk">
         </div>
         <div class="field">
           <label>Adgangskode</label>
-          <input type="password" placeholder="Mindst 8 tegn">
+          <input type="password" id="signup-password" placeholder="Mindst 8 tegn">
         </div>
         <div class="field">
           <label>Gentag adgangskode</label>
-          <input type="password" placeholder="Gentag adgangskode">
+          <input type="password" id="signup-password2" placeholder="Gentag adgangskode">
         </div>
-        <button class="btn-full" onclick="window.location='opret-bolig.html'">Opret konto — det er gratis</button>
+        <button class="btn-full" id="signup-btn" onclick="signupUser()">Opret konto — det er gratis</button>
         <div class="divider"><div class="divider-line"></div><span>eller</span><div class="divider-line"></div></div>
         <button class="btn-mitid">
           <div class="mitid-logo">M</div>
@@ -180,6 +180,94 @@ function showTab(tab) {
   document.querySelectorAll('.form-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1)));
   document.getElementById('panel-login').style.display = tab==='login' ? 'block' : 'none';
   document.getElementById('panel-signup').style.display = tab==='signup' ? 'block' : 'none';
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const { createClient } = supabase
+const _sb = createClient('https://dgsgugorolenijuqkajq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY')
+
+// Check if already logged in
+_sb.auth.getSession().then({ data: { session } }) => {
+  if (session) window.location.href = 'profil.html'
+})
+
+async function loginUser() {
+  const email = document.querySelector('#login-email').value
+  const password = document.querySelector('#login-password').value
+  const btn = document.querySelector('#login-btn')
+  
+  if (!email || !password) return showError('login', 'Udfyld email og adgangskode')
+  
+  btn.textContent = 'Logger ind...'
+  btn.disabled = true
+
+  const { error } = await _sb.auth.signInWithPassword({ email, password })
+  
+  if (error) {
+    btn.textContent = 'Log ind'
+    btn.disabled = false
+    showError('login', 'Forkert email eller adgangskode')
+  } else {
+    window.location.href = 'profil.html'
+  }
+}
+
+async function signupUser() {
+  const firstName = document.querySelector('#signup-firstname').value.trim()
+  const lastName = document.querySelector('#signup-lastname').value.trim()
+  const email = document.querySelector('#signup-email').value.trim()
+  const password = document.querySelector('#signup-password').value
+  const password2 = document.querySelector('#signup-password2').value
+  const btn = document.querySelector('#signup-btn')
+
+  if (!firstName || !lastName || !email || !password) return showError('signup', 'Udfyld alle felter')
+  if (password !== password2) return showError('signup', 'Adgangskoderne matcher ikke')
+  if (password.length < 8) return showError('signup', 'Adgangskoden skal være mindst 8 tegn')
+
+  btn.textContent = 'Opretter konto...'
+  btn.disabled = true
+
+  const { error } = await _sb.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { first_name: firstName, last_name: lastName }
+    }
+  })
+
+  if (error) {
+    btn.textContent = 'Opret konto — det er gratis'
+    btn.disabled = false
+    showError('signup', error.message)
+  } else {
+    window.location.href = 'opret-bolig.html'
+  }
+}
+
+async function resetPassword() {
+  const email = document.querySelector('#login-email').value.trim()
+  if (!email) return showError('login', 'Skriv din email ovenfor først')
+  
+  const { error } = await _sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/reset-password.html'
+  })
+  
+  if (!error) showError('login', '✓ Tjek din email for et nulstillingslink', true)
+}
+
+function showError(panel, msg, success=false) {
+  let el = document.getElementById(panel + '-error')
+  if (!el) {
+    el = document.createElement('div')
+    el.id = panel + '-error'
+    el.style.cssText = 'padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;'
+    document.getElementById('panel-' + panel).insertBefore(el, document.getElementById(panel + '-btn').parentElement || document.getElementById(panel + '-btn'))
+  }
+  el.style.background = success ? 'var(--green-light)' : '#FEF0F0'
+  el.style.color = success ? 'var(--green-dark)' : 'var(--red)'
+  el.textContent = msg
 }
 </script>
 </body>
