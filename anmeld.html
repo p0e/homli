@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homli — Anmeld dit bytte</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green-dark: #1A3A28; --green-mid: #4A9B6F; --green-light: #EDF4F0;
+  --cream: #FFFCF7; --ink: #111110; --ink-2: #3A3A36; --ink-3: #6A6A64;
+  --border: #E8E3DA; --red: #D94040; --gold: #C47A20;
+}
+body { font-family: "Inter", sans-serif; background: #F5F2EC; color: var(--ink); }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 48px; background: var(--cream); border-bottom: 1px solid var(--border); }
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.logo-name { font-family: "DM Serif Display", serif; font-size: 20px; color: var(--ink); }
+
+.container { max-width: 600px; margin: 0 auto; padding: 48px 24px 80px; }
+
+.swap-summary { background: var(--cream); border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 28px; display: flex; align-items: center; gap: 16px; }
+.swap-avatar { width: 52px; height: 52px; border-radius: 50%; background: #4A6B8A; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; color: #fff; flex-shrink: 0; }
+.swap-info h3 { font-size: 16px; font-weight: 500; margin-bottom: 3px; }
+.swap-info p { font-size: 13px; color: var(--ink-3); }
+.swap-done-badge { margin-left: auto; font-size: 11px; background: var(--green-light); color: var(--green-dark); padding: 4px 12px; border-radius: 100px; font-weight: 500; white-space: nowrap; }
+
+.card { background: var(--cream); border-radius: 20px; padding: 28px; border: 1px solid var(--border); margin-bottom: 16px; }
+.card h2 { font-family: "DM Serif Display", serif; font-size: 22px; margin-bottom: 6px; }
+.card .sub { font-size: 14px; color: var(--ink-3); margin-bottom: 24px; }
+
+/* Star rating */
+.star-group { margin-bottom: 24px; }
+.star-label { font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 8px; }
+.stars-input { display: flex; gap: 6px; }
+.star { font-size: 32px; cursor: pointer; transition: transform 0.1s; user-select: none; color: #D8D3CA; }
+.star.lit { color: var(--gold); }
+.star:hover { transform: scale(1.15); }
+
+/* Overall */
+.overall-stars { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
+.overall-star { font-size: 44px; cursor: pointer; transition: transform 0.1s; user-select: none; color: #D8D3CA; }
+.overall-star.lit { color: var(--gold); }
+.overall-star:hover { transform: scale(1.1); }
+.overall-label { text-align: center; font-size: 14px; color: var(--ink-3); margin-bottom: 24px; min-height: 20px; }
+
+/* Would swap again */
+.yesno { display: flex; gap: 12px; }
+.yesno-btn { flex: 1; padding: 14px; border: 1.5px solid var(--border); border-radius: 12px; text-align: center; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--ink-2); transition: all 0.15s; }
+.yesno-btn.yes.selected { background: var(--green-light); border-color: var(--green-mid); color: var(--green-dark); }
+.yesno-btn.no.selected { background: #FEF0F0; border-color: var(--red); color: var(--red); }
+
+textarea { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 15px; color: var(--ink); background: #fff; outline: none; font-family: "Inter", sans-serif; resize: vertical; min-height: 120px; line-height: 1.6; transition: border-color 0.2s; }
+textarea:focus { border-color: var(--green-mid); }
+.char-count { font-size: 11px; color: var(--ink-3); text-align: right; margin-top: 4px; }
+
+.anonymous-note { display: flex; align-items: flex-start; gap: 10px; background: #F5F2EC; border-radius: 10px; padding: 14px 16px; font-size: 13px; color: var(--ink-3); line-height: 1.55; margin-bottom: 20px; }
+.anonymous-note svg { width: 18px; height: 18px; stroke: var(--green-mid); flex-shrink: 0; margin-top: 1px; }
+
+.btn-submit { width: 100%; padding: 16px; background: var(--green-dark); color: #fff; border: none; border-radius: 100px; font-size: 16px; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+.btn-skip { width: 100%; padding: 12px; background: none; border: none; font-size: 13px; color: var(--ink-3); cursor: pointer; font-family: "Inter", sans-serif; margin-top: 10px; }
+
+/* Success */
+#success { display: none; text-align: center; padding: 60px 24px; }
+#success .big-check { width: 80px; height: 80px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; }
+#success h2 { font-family: "DM Serif Display", serif; font-size: 32px; margin-bottom: 12px; }
+#success p { font-size: 15px; color: var(--ink-3); max-width: 360px; margin: 0 auto 36px; line-height: 1.7; }
+.success-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.success-btn { padding: 13px 28px; border-radius: 100px; font-size: 14px; font-weight: 500; text-decoration: none; }
+.success-btn-primary { background: var(--green-dark); color: #fff; }
+.success-btn-ghost { border: 1.5px solid var(--border); color: var(--ink); }
+
+@media (max-width: 600px) {
+  nav { padding: 14px 16px; }
+  .container { padding: 28px 16px 60px; }
+  .overall-star { font-size: 36px; }
+  .star { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="homli.html" class="logo">
+    <svg width="44" height="28" viewBox="0 0 54 34" fill="none">
+      <rect x="20" y="0" width="34" height="34" rx="9" fill="#4A9B6F"/>
+      <path d="M37 4L26 12.5V27H33.5V20H40.5V27H49V12.5L37 4Z" fill="#FFFCF7"/>
+      <circle cx="2" cy="32" r="1.7" fill="#111110"/><circle cx="6" cy="27" r="1.7" fill="#111110"/>
+      <circle cx="10" cy="23" r="1.7" fill="#111110"/><circle cx="14" cy="20" r="1.7" fill="#111110"/>
+      <circle cx="18" cy="19" r="1.7" fill="#111110"/><circle cx="23" cy="20" r="1.7" fill="#111110"/>
+      <circle cx="28" cy="22" r="1.7" fill="#111110"/><circle cx="33" cy="23" r="1.7" fill="#111110"/>
+      <circle cx="37" cy="23" r="1.7" fill="#111110"/>
+      <line x1="34" y1="20" x2="40" y2="27" stroke="#D94040" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="40" y1="20" x2="34" y2="27" stroke="#D94040" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <span class="logo-name">homli</span>
+  </a>
+</nav>
+
+<div class="container">
+  <div id="form-view">
+    <div class="swap-summary">
+      <div class="swap-avatar">MH</div>
+      <div class="swap-info">
+        <h3>Mette & Henrik</h3>
+        <p>Hellerup, København · 1.–14. juli 2025</p>
+      </div>
+      <div class="swap-done-badge">✓ Bytte afsluttet</div>
+    </div>
+
+    <div class="card">
+      <h2>Hvordan gik byttet?</h2>
+      <p class="sub">Din anmeldelse er anonym indtil Mette & Henrik også har anmeldt. Derefter vises begge.</p>
+
+      <div style="margin-bottom:28px;">
+        <div style="font-size:13px;font-weight:500;color:var(--ink-2);text-align:center;margin-bottom:12px;">Samlet oplevelse</div>
+        <div class="overall-stars" id="overall-stars">
+          <span class="overall-star" data-v="1" onclick="setOverall(1)">★</span>
+          <span class="overall-star" data-v="2" onclick="setOverall(2)">★</span>
+          <span class="overall-star" data-v="3" onclick="setOverall(3)">★</span>
+          <span class="overall-star" data-v="4" onclick="setOverall(4)">★</span>
+          <span class="overall-star" data-v="5" onclick="setOverall(5)">★</span>
+        </div>
+        <div class="overall-label" id="overall-label">Vælg din samlede vurdering</div>
+      </div>
+
+      <div class="star-group">
+        <div class="star-label">Boligens stand</div>
+        <div class="stars-input" data-cat="stand">
+          <span class="star" onclick="setSub('stand',1)">★</span><span class="star" onclick="setSub('stand',2)">★</span><span class="star" onclick="setSub('stand',3)">★</span><span class="star" onclick="setSub('stand',4)">★</span><span class="star" onclick="setSub('stand',5)">★</span>
+        </div>
+      </div>
+      <div class="star-group">
+        <div class="star-label">Kommunikation</div>
+        <div class="stars-input" data-cat="komm">
+          <span class="star" onclick="setSub('komm',1)">★</span><span class="star" onclick="setSub('komm',2)">★</span><span class="star" onclick="setSub('komm',3)">★</span><span class="star" onclick="setSub('komm',4)">★</span><span class="star" onclick="setSub('komm',5)">★</span>
+        </div>
+      </div>
+      <div class="star-group">
+        <div class="star-label">Nøjagtighed i beskrivelse</div>
+        <div class="stars-input" data-cat="noej">
+          <span class="star" onclick="setSub('noej',1)">★</span><span class="star" onclick="setSub('noej',2)">★</span><span class="star" onclick="setSub('noej',3)">★</span><span class="star" onclick="setSub('noej',4)">★</span><span class="star" onclick="setSub('noej',5)">★</span>
+        </div>
+      </div>
+
+      <div style="margin:24px 0;">
+        <div style="font-size:13px;font-weight:500;color:var(--ink-2);margin-bottom:10px;">Vil du bytte med dem igen?</div>
+        <div class="yesno">
+          <div class="yesno-btn yes" onclick="selectYesNo(this,'yes')">👍 Ja, bestemt!</div>
+          <div class="yesno-btn no" onclick="selectYesNo(this,'no')">👎 Nej</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Skriv en anmeldelse</h2>
+      <p class="sub">Hvad var særligt godt? Var der noget du ville ønske var anderledes?</p>
+      <div class="anonymous-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Din anmeldelse er skjult indtil begge parter har skrevet. Det sikrer ærlighed uden social påvirkning.
+      </div>
+      <textarea placeholder="Fx: Et fantastisk hjem med masser af plads. Familien var utroligt imødekommende og kommunikerede hurtigt hele vejen. Huset var præcis som beskrevet og vi vil meget gerne bytte igen..."
+        id="review-text" oninput="document.getElementById('char-count').textContent=this.value.length+'/1000'"></textarea>
+      <div class="char-count" id="char-count">0/1000</div>
+    </div>
+
+    <button class="btn-submit" onclick="submitReview()">Send anmeldelse</button>
+    <button class="btn-skip" onclick="window.location='profil.html'">Spring over for nu</button>
+  </div>
+
+  <div id="success">
+    <div class="big-check">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1A3A28" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2>Tak for din anmeldelse!</h2>
+    <p>Din anmeldelse er gemt og vises til Mette & Henrik når de også har anmeldt. Det styrker tilliden for alle på Homli.</p>
+    <div class="success-actions">
+      <a href="soeg.html" class="success-btn success-btn-primary">Find dit næste bytte</a>
+      <a href="profil.html" class="success-btn success-btn-ghost">Gå til profil</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const labels = ['','Dårlig oplevelse','Ikke helt tilfreds','OK — nogenlunde','Rigtigt godt!','Fantastisk oplevelse! ★'];
+function setOverall(v) {
+  document.querySelectorAll('#overall-stars .overall-star').forEach((s,i) => s.classList.toggle('lit', i<v));
+  document.getElementById('overall-label').textContent = labels[v];
+}
+function setSub(cat, v) {
+  document.querySelectorAll(`[data-cat="${cat}"] .star`).forEach((s,i) => s.classList.toggle('lit', i<v));
+}
+function selectYesNo(el, val) {
+  document.querySelectorAll('.yesno-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function submitReview() {
+  document.getElementById('form-view').style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

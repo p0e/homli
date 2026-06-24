@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homli — Opret din bolig</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green-dark: #1A3A28; --green-mid: #4A9B6F; --green-light: #EDF4F0;
+  --cream: #FFFCF7; --ink: #111110; --ink-2: #3A3A36; --ink-3: #6A6A64;
+  --border: #E8E3DA; --red: #D94040;
+}
+body { font-family: 'Inter', sans-serif; background: #F5F2EC; color: var(--ink); }
+
+nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; background: var(--cream); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); }
+.nav-right { display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--ink-3); }
+.nav-right a { color: var(--green-dark); text-decoration: none; font-weight: 500; }
+
+.container { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+
+/* progress */
+.progress { display: flex; align-items: center; gap: 0; margin-bottom: 48px; }
+.prog-step { display: flex; align-items: center; gap: 8px; }
+.prog-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; flex-shrink: 0; }
+.prog-circle.done { background: var(--green-dark); color: #fff; }
+.prog-circle.active { background: var(--green-mid); color: #fff; }
+.prog-circle.todo { background: #fff; color: var(--ink-3); border: 1.5px solid var(--border); }
+.prog-label { font-size: 12px; font-weight: 500; }
+.prog-label.active { color: var(--ink); }
+.prog-label.todo { color: var(--ink-3); }
+.prog-line { flex: 1; height: 1px; background: var(--border); margin: 0 8px; }
+
+.card { background: var(--cream); border-radius: 20px; padding: 36px; margin-bottom: 20px; border: 1px solid var(--border); }
+.card-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--ink); margin-bottom: 6px; }
+.card-sub { font-size: 14px; color: var(--ink-3); margin-bottom: 28px; }
+
+.field { margin-bottom: 20px; }
+.field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 6px; }
+.field input, .field textarea, .field select {
+  width: 100%; padding: 13px 16px; border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: 15px; color: var(--ink); background: #fff;
+  outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s;
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--green-mid); }
+.field textarea { resize: vertical; min-height: 100px; }
+.field-hint { font-size: 11px; color: var(--ink-3); margin-top: 5px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* image upload */
+.upload-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+.upload-slot { aspect-ratio: 4/3; border-radius: 12px; border: 2px dashed var(--border); background: #F5F2EC; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: border-color 0.2s; position: relative; overflow: hidden; }
+.upload-slot:hover { border-color: var(--green-mid); }
+.upload-slot.filled { border-style: solid; border-color: var(--border); }
+.upload-slot svg { width: 28px; height: 28px; stroke: var(--ink-3); }
+.upload-slot span { font-size: 11px; color: var(--ink-3); }
+.upload-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.upload-main { grid-column: span 2; grid-row: span 2; }
+.upload-note { font-size: 11px; color: var(--ink-3); }
+input[type="file"] { display: none; }
+
+/* amenities */
+.amenity-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.amenity { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--ink-2); background: #fff; transition: all 0.15s; user-select: none; }
+.amenity.selected { border-color: var(--green-mid); background: var(--green-light); color: var(--green-dark); }
+.amenity svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* date picker visual */
+.date-hint { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); margin-top: 8px; }
+.date-hint svg { width: 14px; height: 14px; stroke: var(--green-mid); }
+
+/* type selector */
+.type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 4px; }
+.type-btn { padding: 12px 8px; border: 1.5px solid var(--border); border-radius: 10px; text-align: center; cursor: pointer; font-size: 12px; color: var(--ink-2); background: #fff; transition: all 0.15s; }
+.type-btn.selected { border-color: var(--green-mid); background: var(--green-light); color: var(--green-dark); font-weight: 500; }
+.type-btn svg { width: 22px; height: 22px; stroke: currentColor; display: block; margin: 0 auto 6px; }
+
+/* bottom bar */
+.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--cream); border-top: 1px solid var(--border); padding: 16px 48px; display: flex; align-items: center; justify-content: space-between; z-index: 99; }
+.btn-back { padding: 13px 28px; border: 1.5px solid var(--border); border-radius: 100px; font-size: 14px; font-weight: 500; color: var(--ink-2); background: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+.btn-next { padding: 13px 32px; background: var(--green-dark); color: #fff; border: none; border-radius: 100px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; }
+.step-indicator { font-size: 13px; color: var(--ink-3); }
+
+/* panels */
+.step-panel { display: none; }
+.step-panel.active { display: block; }
+
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .container { padding: 32px 16px 96px; }
+  .field-row, .field-row-3 { grid-template-columns: 1fr; }
+  .amenity-grid { grid-template-columns: repeat(2, 1fr); }
+  .type-grid { grid-template-columns: repeat(2, 1fr); }
+  .upload-grid { grid-template-columns: repeat(2, 1fr); }
+  .upload-main { grid-column: span 2; }
+  .bottom-bar { padding: 16px 20px; }
+  .progress { overflow-x: auto; padding-bottom: 4px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="homli.html" class="logo">
+    <svg width="52" height="34" viewBox="0 0 54 34" fill="none">
+      <rect x="20" y="0" width="34" height="34" rx="9" fill="#4A9B6F"/>
+      <path d="M37 4L26 12.5V27H33.5V20H40.5V27H49V12.5L37 4Z" fill="#FFFCF7"/>
+      <circle cx="2" cy="32" r="1.7" fill="#111110"/><circle cx="6" cy="27" r="1.7" fill="#111110"/>
+      <circle cx="10" cy="23" r="1.7" fill="#111110"/><circle cx="14" cy="20" r="1.7" fill="#111110"/>
+      <circle cx="18" cy="19" r="1.7" fill="#111110"/><circle cx="23" cy="20" r="1.7" fill="#111110"/>
+      <circle cx="28" cy="22" r="1.7" fill="#111110"/><circle cx="33" cy="23" r="1.7" fill="#111110"/>
+      <circle cx="37" cy="23" r="1.7" fill="#111110"/>
+      <line x1="34" y1="20" x2="40" y2="27" stroke="#D94040" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="40" y1="20" x2="34" y2="27" stroke="#D94040" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <span class="logo-name">homli</span>
+  </a>
+  <div class="nav-right">Trin <strong id="nav-step">1</strong> af 4 &nbsp;·&nbsp; <a href="homli.html">Afslut</a></div>
+</nav>
+
+<div class="container">
+  <div class="progress">
+    <div class="prog-step">
+      <div class="prog-circle active" id="pc1">1</div>
+      <span class="prog-label active" id="pl1">Din bolig</span>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step">
+      <div class="prog-circle todo" id="pc2">2</div>
+      <span class="prog-label todo" id="pl2">Billeder</span>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step">
+      <div class="prog-circle todo" id="pc3">3</div>
+      <span class="prog-label todo" id="pl3">Tilgængelighed</span>
+    </div>
+    <div class="prog-line"></div>
+    <div class="prog-step">
+      <div class="prog-circle todo" id="pc4">4</div>
+      <span class="prog-label todo" id="pl4">Færdig</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: Bolig info -->
+  <div class="step-panel active" id="step1">
+    <div class="card">
+      <h2 class="card-title">Hvilken type bolig har du?</h2>
+      <p class="card-sub">Vælg den type der passer bedst</p>
+      <div class="type-grid">
+        <div class="type-btn selected" onclick="selectType(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Villa / hus
+        </div>
+        <div class="type-btn" onclick="selectType(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Lejlighed
+        </div>
+        <div class="type-btn" onclick="selectType(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M20 9V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><path d="M2 11l2-2h16l2 2v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-9z"/></svg>
+          Sommerhus
+        </div>
+        <div class="type-btn" onclick="selectType(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="22" x2="9" y2="2"/><line x1="4" y1="12" x2="9" y2="12"/><line x1="9" y1="7" x2="20" y2="7"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="17" x2="20" y2="17"/></svg>
+          Rækkehus
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Adresse og placering</h2>
+      <p class="card-sub">Præcis adresse vises kun til bekræftede byttepartnere</p>
+      <div class="field">
+        <label>Vejnavn og husnummer</label>
+        <input type="text" placeholder="Eksempel: Strandvejen 42">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Postnummer</label>
+          <input type="text" placeholder="2900">
+        </div>
+        <div class="field">
+          <label>By</label>
+          <input type="text" placeholder="Hellerup">
+        </div>
+      </div>
+      <div class="field">
+        <label>Land</label>
+        <select>
+          <option>Danmark</option>
+          <option>Sverige</option>
+          <option>Norge</option>
+          <option>Finland</option>
+          <option>Tyskland</option>
+          <option>Andet</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Om boligen</h2>
+      <p class="card-sub">Fortæl potentielle byttepartnere om dit hjem</p>
+      <div class="field-row-3">
+        <div class="field">
+          <label>Soveværelser</label>
+          <select><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5+</option></select>
+        </div>
+        <div class="field">
+          <label>Badeværelser</label>
+          <select><option>1</option><option selected>2</option><option>3+</option></select>
+        </div>
+        <div class="field">
+          <label>Kvadratmeter</label>
+          <input type="number" placeholder="130">
+        </div>
+      </div>
+      <div class="field">
+        <label>Titel på din bolig</label>
+        <input type="text" placeholder="Fx: Lys villa med have og terrasse i Hellerup">
+        <div class="field-hint">En god titel øger din chance for bytte markant</div>
+      </div>
+      <div class="field">
+        <label>Beskrivelse</label>
+        <textarea placeholder="Beskriv din bolig — beliggenhed, stemning, hvad er særligt ved den? Jo mere du skriver, jo mere tillid skaber du hos potentielle byttepartnere."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Faciliteter</h2>
+      <p class="card-sub">Vælg hvad din bolig har at byde på</p>
+      <div class="amenity-grid">
+        <div class="amenity selected" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> Have
+        </div>
+        <div class="amenity selected" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg> Wifi
+        </div>
+        <div class="amenity" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Pool
+        </div>
+        <div class="amenity selected" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/></svg> Parkering
+        </div>
+        <div class="amenity" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Vaskemaskine
+        </div>
+        <div class="amenity" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Kæledyr ok
+        </div>
+        <div class="amenity" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 17l9-9 4 4 5-5"/><path d="M14 8h7v7"/></svg> Jacuzzi
+        </div>
+        <div class="amenity selected" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20h20M4 20V10l8-6 8 6v10"/></svg> Terrasse
+        </div>
+        <div class="amenity" onclick="toggleAmenity(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg> Solpaneler
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Billeder -->
+  <div class="step-panel" id="step2">
+    <div class="card">
+      <h2 class="card-title">Billeder af din bolig</h2>
+      <p class="card-sub">Det første billede bliver dit forsidebillede. Upload mindst 3 billeder — jo flere, jo bedre.</p>
+      <div class="upload-grid">
+        <div class="upload-slot upload-main" onclick="triggerUpload('main')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>Forsidebillede</span>
+          <span style="font-size:10px;color:#aaa;">Tap for at vælge</span>
+        </div>
+        <div class="upload-slot" onclick="triggerUpload('s1')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Tilføj</span>
+        </div>
+        <div class="upload-slot" onclick="triggerUpload('s2')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Tilføj</span>
+        </div>
+        <div class="upload-slot" onclick="triggerUpload('s3')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Tilføj</span>
+        </div>
+        <div class="upload-slot" onclick="triggerUpload('s4')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Tilføj</span>
+        </div>
+      </div>
+      <p class="upload-note">📱 På mobil kan du tage billeder direkte med kameraet</p>
+      <input type="file" id="file-main" accept="image/*" onchange="previewImage(this,'main')">
+      <input type="file" id="file-s1" accept="image/*" onchange="previewImage(this,'s1')">
+      <input type="file" id="file-s2" accept="image/*" onchange="previewImage(this,'s2')">
+      <input type="file" id="file-s3" accept="image/*" onchange="previewImage(this,'s3')">
+      <input type="file" id="file-s4" accept="image/*" onchange="previewImage(this,'s4')">
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Tips til gode boligbilleder</h2>
+      <p class="card-sub">Boliger med gode billeder får 3x flere henvendelser</p>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;">☀️</div>
+          <div><div style="font-size:14px;font-weight:500;margin-bottom:2px;">Naturligt lys</div><div style="font-size:13px;color:var(--ink-3);">Fotografer i dagtimerne med åbne gardiner</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;">🏠</div>
+          <div><div style="font-size:14px;font-weight:500;margin-bottom:2px;">Vis helheden</div><div style="font-size:13px;color:var(--ink-3);">Inkluder stue, køkken, soveværelser og udearealer</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;">✨</div>
+          <div><div style="font-size:14px;font-weight:500;margin-bottom:2px;">Ryd op først</div><div style="font-size:13px;color:var(--ink-3);">Et ryddeligt hjem ser større og mere indbydende ud</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Tilgængelighed -->
+  <div class="step-panel" id="step3">
+    <div class="card">
+      <h2 class="card-title">Hvornår vil du bytte?</h2>
+      <p class="card-sub">Din bolig vises kun i søgninger der matcher dine datoer. Du kan tilføje flere perioder.</p>
+
+      <div id="date-periods">
+        <div class="date-period" style="background:#F5F2EC;border-radius:12px;padding:16px;margin-bottom:12px;">
+          <div style="font-size:12px;font-weight:500;color:var(--ink-3);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">Periode 1</div>
+          <div class="field-row">
+            <div class="field" style="margin-bottom:0;">
+              <label>Fra dato</label>
+              <input type="date" value="2025-07-01">
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Til dato</label>
+              <input type="date" value="2025-07-31">
+            </div>
+          </div>
+        </div>
+        <div class="date-period" style="background:#F5F2EC;border-radius:12px;padding:16px;margin-bottom:12px;">
+          <div style="font-size:12px;font-weight:500;color:var(--ink-3);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">Periode 2</div>
+          <div class="field-row">
+            <div class="field" style="margin-bottom:0;">
+              <label>Fra dato</label>
+              <input type="date" value="2025-08-01">
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Til dato</label>
+              <input type="date" value="2025-08-20">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="addPeriod()" style="display:flex;align-items:center;gap:8px;padding:10px 20px;border:1.5px dashed var(--border);border-radius:10px;background:none;font-size:13px;color:var(--ink-3);cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Tilføj endnu en periode
+      </button>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Minimumslængde</h2>
+      <p class="card-sub">Hvad er det korteste bytte du er interesseret i?</p>
+      <div class="type-grid">
+        <div class="type-btn" onclick="selectType(this)">2 nætter</div>
+        <div class="type-btn selected" onclick="selectType(this)">3–5 nætter</div>
+        <div class="type-btn" onclick="selectType(this)">1 uge</div>
+        <div class="type-btn" onclick="selectType(this)">2+ uger</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">Særlige ønsker</h2>
+      <p class="card-sub">Er der noget du gerne vil have af en byttepartner?</p>
+      <div class="field">
+        <label>Destinationer du drømmer om</label>
+        <input type="text" placeholder="Fx: Sydeuropa, storby, natur — adskil med komma">
+      </div>
+      <div class="field">
+        <label>Antal gæster i din bolig</label>
+        <select>
+          <option>Op til 2 personer</option>
+          <option>Op til 4 personer</option>
+          <option selected>Op til 6 personer</option>
+          <option>Op til 8 personer</option>
+          <option>Ingen begrænsning</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Besked til potentielle byttepartnere (valgfri)</label>
+        <textarea placeholder="Fx: Vi er en familie med to børn og elsker naturen. Vi tager godt vare på dit hjem og overlader det som vi fandt det."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Færdig -->
+  <div class="step-panel" id="step4">
+    <div style="text-align:center;padding:48px 24px;">
+      <div style="width:80px;height:80px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1A3A28" stroke-width="1.8" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 style="font-family:'DM Serif Display',serif;font-size:36px;margin-bottom:12px;">Din bolig er oprettet!</h2>
+      <p style="font-size:16px;color:var(--ink-3);max-width:400px;margin:0 auto 40px;line-height:1.7;">Din bolig er nu synlig for andre Homli-brugere i de perioder du har valgt. Held og lykke med dit første bytte!</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="profil.html" style="padding:15px 32px;background:var(--green-dark);color:#fff;border-radius:100px;text-decoration:none;font-weight:500;font-size:15px;">Se min profil</a>
+        <a href="soeg.html" style="padding:15px 32px;border:1.5px solid var(--border);color:var(--ink);border-radius:100px;text-decoration:none;font-size:15px;">Søg boliger</a>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:16px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🔒</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:6px;">Bliv verificeret</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-bottom:14px;">Øg din troværdighed med ID-verificering</div>
+        <a href="#" style="font-size:13px;color:var(--green-dark);font-weight:500;text-decoration:none;">Kom i gang →</a>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🔍</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:6px;">Find et bytte</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-bottom:14px;">Søg efter boliger der passer til dine datoer</div>
+        <a href="soeg.html" style="font-size:13px;color:var(--green-dark);font-weight:500;text-decoration:none;">Søg boliger →</a>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">⭐</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:6px;">Opgrader til Plus</div>
+        <div style="font-size:12px;color:var(--ink-3);margin-bottom:14px;">Tilføj flere billeder og op til 3 boliger</div>
+        <a href="homli.html#priser" style="font-size:13px;color:var(--green-dark);font-weight:500;text-decoration:none;">Se priser →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar" id="bottom-bar">
+  <button class="btn-back" onclick="prevStep()" id="btn-back" style="visibility:hidden;">← Tilbage</button>
+  <span class="step-indicator" id="step-indicator">Trin 1 af 3</span>
+  <button class="btn-next" onclick="nextStep()" id="btn-next">Næste →</button>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 3;
+
+function updateUI() {
+  document.querySelectorAll('.step-panel').forEach((p,i) => p.classList.toggle('active', i===currentStep-1));
+  document.getElementById('nav-step').textContent = currentStep;
+  document.getElementById('step-indicator').textContent = `Trin ${currentStep} af ${totalSteps}`;
+  document.getElementById('btn-back').style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+  document.getElementById('btn-next').textContent = currentStep === totalSteps ? 'Gem bolig ✓' : 'Næste →';
+  document.getElementById('bottom-bar').style.display = currentStep > totalSteps ? 'none' : 'flex';
+
+  // Update progress circles
+  for(let i=1;i<=4;i++){
+    const pc = document.getElementById('pc'+i);
+    const pl = document.getElementById('pl'+i);
+    pc.className = 'prog-circle ' + (i < currentStep ? 'done' : i === currentStep ? 'active' : 'todo');
+    pl.className = 'prog-label ' + (i <= currentStep ? 'active' : 'todo');
+    if(i < currentStep) pc.innerHTML = '✓';
+    else pc.innerHTML = i;
+  }
+}
+
+function nextStep() {
+  if(currentStep < totalSteps) { currentStep++; updateUI(); window.scrollTo(0,0); }
+  else { currentStep = 4; updateUI(); window.scrollTo(0,0); }
+}
+function prevStep() {
+  if(currentStep > 1) { currentStep--; updateUI(); window.scrollTo(0,0); }
+}
+
+function selectType(el) {
+  el.closest('.type-grid,.type-grid').querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function toggleAmenity(el) { el.classList.toggle('selected'); }
+
+function triggerUpload(id) { document.getElementById('file-'+id).click(); }
+function previewImage(input, id) {
+  if(!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const slot = input.previousElementSibling || document.querySelector(`.upload-slot[onclick*="${id}"]`);
+    const slots = document.querySelectorAll('.upload-slot');
+    slots.forEach(s => { if(s.getAttribute('onclick')?.includes(id)) {
+      s.classList.add('filled');
+      s.innerHTML = `<img src="${e.target.result}" alt="preview">`;
+    }});
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+let periodCount = 2;
+function addPeriod() {
+  periodCount++;
+  const div = document.createElement('div');
+  div.className = 'date-period';
+  div.style.cssText = 'background:#F5F2EC;border-radius:12px;padding:16px;margin-bottom:12px;';
+  div.innerHTML = `<div style="font-size:12px;font-weight:500;color:var(--ink-3);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">Periode ${periodCount}</div><div class="field-row"><div class="field" style="margin-bottom:0;"><label>Fra dato</label><input type="date"></div><div class="field" style="margin-bottom:0;"><label>Til dato</label><input type="date"></div></div>`;
+  document.getElementById('date-periods').appendChild(div);
+}
+
+updateUI();
+</script>
+</body>
+</html>

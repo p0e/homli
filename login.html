@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homli — Log ind</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --green-dark: #1A3A28; --green-mid: #4A9B6F; --green-light: #EDF4F0;
+  --cream: #FFFCF7; --ink: #111110; --ink-2: #3A3A36; --ink-3: #6A6A64;
+  --border: #E8E3DA; --red: #D94040;
+}
+body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
+
+nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; background: var(--cream); border-bottom: 1px solid var(--border); }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); }
+
+.page { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 65px); }
+
+.page-left { background: var(--green-dark); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px; position: relative; overflow: hidden; }
+.page-left-bg { position: absolute; inset: 0; opacity: 0.06; }
+.page-left h2 { font-family: 'DM Serif Display', serif; font-size: 42px; color: #fff; line-height: 1.1; margin-bottom: 20px; position: relative; z-index: 1; }
+.page-left p { font-size: 16px; color: rgba(255,255,255,0.65); line-height: 1.7; position: relative; z-index: 1; max-width: 340px; }
+.testimonial { margin-top: 48px; background: rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; position: relative; z-index: 1; max-width: 360px; }
+.testimonial-text { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.65; font-style: italic; margin-bottom: 16px; }
+.testimonial-author { display: flex; align-items: center; gap: 10px; }
+.t-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-mid); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #fff; }
+.t-name { font-size: 13px; color: #fff; font-weight: 500; }
+.t-sub { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+.page-right { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px 48px; }
+.form-box { width: 100%; max-width: 400px; }
+.form-tabs { display: flex; gap: 0; margin-bottom: 36px; background: #F0EDE6; border-radius: 12px; padding: 4px; }
+.form-tab { flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 500; color: var(--ink-3); border-radius: 9px; cursor: pointer; transition: all 0.2s; }
+.form-tab.active { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.form-title { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--ink); margin-bottom: 8px; }
+.form-sub { font-size: 14px; color: var(--ink-3); margin-bottom: 32px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-2); margin-bottom: 6px; }
+.field input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--ink); background: #fff; outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
+.field input:focus { border-color: var(--green-mid); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.forgot { font-size: 12px; color: var(--green-mid); text-decoration: none; float: right; margin-top: -10px; margin-bottom: 24px; display: block; }
+.btn-full { width: 100%; padding: 15px; background: var(--green-dark); color: #fff; border: none; border-radius: 100px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 8px; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider span { font-size: 12px; color: var(--ink-3); }
+.btn-mitid { width: 100%; padding: 13px; background: #003d99; color: #fff; border: none; border-radius: 100px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.mitid-logo { width: 20px; height: 20px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #003d99; flex-shrink: 0; }
+.switch-text { text-align: center; font-size: 13px; color: var(--ink-3); margin-top: 28px; }
+.switch-text a { color: var(--green-dark); font-weight: 500; text-decoration: none; }
+.terms { font-size: 11px; color: var(--ink-3); text-align: center; margin-top: 20px; line-height: 1.6; }
+.terms a { color: var(--ink-3); }
+
+/* panel toggling */
+#panel-login { display: block; }
+#panel-signup { display: none; }
+
+@media (max-width: 768px) {
+  nav { padding: 18px 20px; }
+  .page { grid-template-columns: 1fr; }
+  .page-left { display: none; }
+  .page-right { padding: 40px 24px; }
+  .form-box { max-width: 100%; }
+  .field-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="homli.html" class="logo">
+    <svg width="52" height="34" viewBox="0 0 54 34" fill="none">
+      <rect x="20" y="0" width="34" height="34" rx="9" fill="#4A9B6F"/>
+      <path d="M37 4L26 12.5V27H33.5V20H40.5V27H49V12.5L37 4Z" fill="#FFFCF7"/>
+      <circle cx="2" cy="32" r="1.7" fill="#111110"/><circle cx="6" cy="27" r="1.7" fill="#111110"/>
+      <circle cx="10" cy="23" r="1.7" fill="#111110"/><circle cx="14" cy="20" r="1.7" fill="#111110"/>
+      <circle cx="18" cy="19" r="1.7" fill="#111110"/><circle cx="23" cy="20" r="1.7" fill="#111110"/>
+      <circle cx="28" cy="22" r="1.7" fill="#111110"/><circle cx="33" cy="23" r="1.7" fill="#111110"/>
+      <circle cx="37" cy="23" r="1.7" fill="#111110"/>
+      <line x1="34" y1="20" x2="40" y2="27" stroke="#D94040" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="40" y1="20" x2="34" y2="27" stroke="#D94040" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <span class="logo-name">homli</span>
+  </a>
+</nav>
+
+<div class="page">
+  <div class="page-left">
+    <svg class="page-left-bg" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M200 60L40 180V520H360V180L200 60Z" stroke="#fff" stroke-width="2" fill="none"/>
+      <path d="M150 520V340H250V520" stroke="#fff" stroke-width="2" fill="none"/>
+    </svg>
+    <div style="position:relative;z-index:1;max-width:360px;">
+      <h2>Verden venter.<br>Dit hjem er<br><em style="font-style:italic;">billetten.</em></h2>
+      <p style="margin-top:16px;">Opret en gratis konto og byt bolig med familier over hele Danmark — og snart verden.</p>
+      <div class="testimonial">
+        <p class="testimonial-text">"Vi sparer mindst 15.000 kr. om året på overnatninger. Med tre børn er det en kæmpe forskel."</p>
+        <div class="testimonial-author">
+          <div class="t-avatar">TN</div>
+          <div>
+            <div class="t-name">Thomas & Nina</div>
+            <div class="t-sub">Aarhus → Amsterdam · 4 bytter</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-right">
+    <div class="form-box">
+      <div class="form-tabs">
+        <div class="form-tab active" onclick="showTab('login')">Log ind</div>
+        <div class="form-tab" onclick="showTab('signup')">Opret konto</div>
+      </div>
+
+      <div id="panel-login">
+        <h1 class="form-title">Velkommen tilbage</h1>
+        <p class="form-sub">Log ind for at se dine bytter og beskeder</p>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" placeholder="din@email.dk">
+        </div>
+        <div class="field">
+          <label>Adgangskode</label>
+          <input type="password" placeholder="••••••••">
+        </div>
+        <a href="#" class="forgot">Glemt adgangskode?</a>
+        <button class="btn-full">Log ind</button>
+        <div class="divider"><div class="divider-line"></div><span>eller</span><div class="divider-line"></div></div>
+        <button class="btn-mitid">
+          <div class="mitid-logo">M</div>
+          Log ind med MitID
+        </button>
+        <p class="switch-text">Ny bruger? <a href="#" onclick="showTab('signup')">Opret gratis konto</a></p>
+      </div>
+
+      <div id="panel-signup">
+        <h1 class="form-title">Opret konto</h1>
+        <p class="form-sub">Gratis — ingen kreditkort kræves</p>
+        <div class="field-row">
+          <div class="field">
+            <label>Fornavn</label>
+            <input type="text" placeholder="Magnus">
+          </div>
+          <div class="field">
+            <label>Efternavn</label>
+            <input type="text" placeholder="Jensen">
+          </div>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" placeholder="din@email.dk">
+        </div>
+        <div class="field">
+          <label>Adgangskode</label>
+          <input type="password" placeholder="Mindst 8 tegn">
+        </div>
+        <div class="field">
+          <label>Gentag adgangskode</label>
+          <input type="password" placeholder="Gentag adgangskode">
+        </div>
+        <button class="btn-full" onclick="window.location='opret-bolig.html'">Opret konto — det er gratis</button>
+        <div class="divider"><div class="divider-line"></div><span>eller</span><div class="divider-line"></div></div>
+        <button class="btn-mitid">
+          <div class="mitid-logo">M</div>
+          Opret med MitID
+        </button>
+        <p class="terms">Ved at oprette en konto accepterer du vores <a href="#">vilkår</a> og <a href="#">privatlivspolitik</a></p>
+        <p class="switch-text">Har du allerede en konto? <a href="#" onclick="showTab('login')">Log ind</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(tab) {
+  document.querySelectorAll('.form-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1)));
+  document.getElementById('panel-login').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('panel-signup').style.display = tab==='signup' ? 'block' : 'none';
+}
+</script>
+</body>
+</html>
