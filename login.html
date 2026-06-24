@@ -183,7 +183,7 @@ function showTab(tab) {
 }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const { createClient } = supabase
 const _sb = createClient('https://dgsgugorolenijuqkajq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY')
@@ -270,5 +270,118 @@ function showError(panel, msg, success=false) {
   el.textContent = msg
 }
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL = 'https://dgsgugorolenijuqkajq.supabase.co'
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY'
+const { createClient } = supabase
+const _sb = createClient(SB_URL, SB_KEY)
+
+_sb.auth.getSession().then(function(res) {
+  if (res.data && res.data.session) window.location.href = 'profil.html'
+})
+
+function showMsg(id, msg, isSuccess) {
+  var el = document.getElementById(id)
+  if (!el) {
+    el = document.createElement('div')
+    el.id = id
+    el.style.cssText = 'padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;text-align:center;'
+  }
+  el.style.background = isSuccess ? '#EDF4F0' : '#FEF0F0'
+  el.style.color = isSuccess ? '#1A3A28' : '#D94040'
+  el.textContent = msg
+  return el
+}
+
+function loginUser() {
+  var email = document.getElementById('login-email').value.trim()
+  var password = document.getElementById('login-password').value
+  var btn = document.getElementById('login-btn')
+  var panel = document.getElementById('panel-login')
+
+  if (!email || !password) {
+    var m = showMsg('login-msg', 'Udfyld email og adgangskode', false)
+    if (!document.getElementById('login-msg')) panel.insertBefore(m, btn)
+    return
+  }
+
+  btn.textContent = 'Logger ind...'
+  btn.disabled = true
+
+  _sb.auth.signInWithPassword({ email: email, password: password }).then(function(res) {
+    if (res.error) {
+      btn.textContent = 'Log ind'
+      btn.disabled = false
+      var m = showMsg('login-msg', 'Forkert email eller adgangskode', false)
+      if (!document.getElementById('login-msg')) panel.insertBefore(m, btn)
+      else document.getElementById('login-msg').textContent = 'Forkert email eller adgangskode'
+    } else {
+      window.location.href = 'profil.html'
+    }
+  })
+}
+
+function signupUser() {
+  var firstName = document.getElementById('signup-firstname').value.trim()
+  var lastName = document.getElementById('signup-lastname').value.trim()
+  var email = document.getElementById('signup-email').value.trim()
+  var password = document.getElementById('signup-password').value
+  var password2 = document.getElementById('signup-password2').value
+  var btn = document.getElementById('signup-btn')
+  var panel = document.getElementById('panel-signup')
+
+  function showErr(msg) {
+    var existing = document.getElementById('signup-msg')
+    if (existing) { existing.textContent = msg; return }
+    var m = showMsg('signup-msg', msg, false)
+    panel.insertBefore(m, btn)
+  }
+
+  if (!firstName || !lastName || !email || !password) return showErr('Udfyld alle felter')
+  if (password !== password2) return showErr('Adgangskoderne matcher ikke')
+  if (password.length < 6) return showErr('Adgangskoden skal vaere mindst 6 tegn')
+
+  btn.textContent = 'Opretter konto...'
+  btn.disabled = true
+
+  _sb.auth.signUp({
+    email: email,
+    password: password,
+    options: { data: { first_name: firstName, last_name: lastName } }
+  }).then(function(res) {
+    if (res.error) {
+      btn.textContent = 'Opret konto - det er gratis'
+      btn.disabled = false
+      showErr(res.error.message)
+    } else {
+      btn.textContent = 'Konto oprettet!'
+      btn.style.background = '#4A9B6F'
+      var m = showMsg('signup-msg', 'Konto oprettet! Du sendes videre...', true)
+      var existing = document.getElementById('signup-msg')
+      if (!existing) panel.insertBefore(m, btn)
+      else { existing.textContent = 'Konto oprettet! Du sendes videre...'; existing.style.background='#EDF4F0'; existing.style.color='#1A3A28' }
+      setTimeout(function() { window.location.href = 'opret-bolig.html' }, 1500)
+    }
+  })
+}
+
+function resetPassword() {
+  var email = document.getElementById('login-email').value.trim()
+  var panel = document.getElementById('panel-login')
+  var btn = document.getElementById('login-btn')
+  if (!email) {
+    var m = showMsg('login-msg', 'Skriv din email ovenfor forst', false)
+    if (!document.getElementById('login-msg')) panel.insertBefore(m, btn)
+    return
+  }
+  _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reset-password.html' }).then(function() {
+    var m = showMsg('login-msg', 'Tjek din email for et nulstillingslink', true)
+    if (!document.getElementById('login-msg')) panel.insertBefore(m, btn)
+  })
+}
+</script>
+
 </body>
 </html>
