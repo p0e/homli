@@ -13,15 +13,11 @@
   --border: #E8E3DA; --red: #D94040;
 }
 body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
-
 nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; background: var(--cream); border-bottom: 1px solid var(--border); }
 .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .logo-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); }
-
 .page { flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 65px); }
-
 .page-left { background: var(--green-dark); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px; position: relative; overflow: hidden; }
-.page-left-bg { position: absolute; inset: 0; opacity: 0.06; }
 .page-left h2 { font-family: 'DM Serif Display', serif; font-size: 42px; color: #fff; line-height: 1.1; margin-bottom: 20px; position: relative; z-index: 1; }
 .page-left p { font-size: 16px; color: rgba(255,255,255,0.65); line-height: 1.7; position: relative; z-index: 1; max-width: 340px; }
 .testimonial { margin-top: 48px; background: rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; position: relative; z-index: 1; max-width: 360px; }
@@ -30,7 +26,6 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .t-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-mid); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #fff; }
 .t-name { font-size: 13px; color: #fff; font-weight: 500; }
 .t-sub { font-size: 11px; color: rgba(255,255,255,0.5); }
-
 .page-right { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 60px 48px; }
 .form-box { width: 100%; max-width: 400px; }
 .form-tabs { display: flex; gap: 0; margin-bottom: 36px; background: #F0EDE6; border-radius: 12px; padding: 4px; }
@@ -43,7 +38,7 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .field input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; color: var(--ink); background: #fff; outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
 .field input:focus { border-color: var(--green-mid); }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.forgot { font-size: 12px; color: var(--green-mid); text-decoration: none; float: right; margin-top: -10px; margin-bottom: 24px; display: block; }
+.forgot { font-size: 12px; color: var(--green-mid); text-decoration: none; float: right; margin-top: -10px; margin-bottom: 24px; display: block; cursor: pointer; }
 .btn-full { width: 100%; padding: 15px; background: var(--green-dark); color: #fff; border: none; border-radius: 100px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 8px; }
 .divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; }
 .divider-line { flex: 1; height: 1px; background: var(--border); }
@@ -51,27 +46,35 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 .btn-mitid { width: 100%; padding: 13px; background: #003d99; color: #fff; border: none; border-radius: 100px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 10px; }
 .mitid-logo { width: 20px; height: 20px; background: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #003d99; flex-shrink: 0; }
 .switch-text { text-align: center; font-size: 13px; color: var(--ink-3); margin-top: 28px; }
-.switch-text a { color: var(--green-dark); font-weight: 500; text-decoration: none; }
+.switch-text a { color: var(--green-dark); font-weight: 500; text-decoration: none; cursor: pointer; }
 .terms { font-size: 11px; color: var(--ink-3); text-align: center; margin-top: 20px; line-height: 1.6; }
-.terms a { color: var(--ink-3); }
-
-/* panel toggling */
+.msg-box { padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 16px; text-align: center; display: none; }
+.msg-box.error { background: #FEF0F0; color: var(--red); display: block; }
+.msg-box.success { background: var(--green-light); color: var(--green-dark); display: block; }
 #panel-login { display: block; }
 #panel-signup { display: none; }
-
 @media (max-width: 768px) {
   nav { padding: 18px 20px; }
   .page { grid-template-columns: 1fr; }
   .page-left { display: none; }
   .page-right { padding: 40px 24px; }
-  .form-box { max-width: 100%; }
   .field-row { grid-template-columns: 1fr; }
 }
+
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; background: var(--green-dark); border-radius: 8px; }
+.hamburger span { width: 22px; height: 2px; background: #fff; border-radius: 2px; display: block; }
+.mobile-menu { display: none; position: fixed; inset: 0; background: var(--cream); z-index: 999; flex-direction: column; justify-content: center; align-items: center; gap: 32px; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--ink); text-decoration: none; }
+.mobile-menu .close-btn { position: absolute; top: 24px; right: 24px; font-size: 28px; cursor: pointer; background: none; border: none; color: var(--ink); }
+.mobile-menu .m-cta { background: var(--green-dark); color: #fff !important; padding: 14px 36px; border-radius: 100px; font-size: 22px !important; }
+@media (max-width: 900px) { .hamburger { display: flex !important; } .nav-links { display: none !important; } .nav-right { display: none !important; } .nav-links a, .nav-right { display: none !important; } }
+
 </style>
 </head>
 <body>
 <nav>
-  <a href="homli.html" class="logo">
+  <a href="index.html" class="logo">
     <svg width="52" height="34" viewBox="0 0 54 34" fill="none">
       <rect x="20" y="0" width="34" height="34" rx="9" fill="#4A9B6F"/>
       <path d="M37 4L26 12.5V27H33.5V20H40.5V27H49V12.5L37 4Z" fill="#FFFCF7"/>
@@ -89,10 +92,6 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
 
 <div class="page">
   <div class="page-left">
-    <svg class="page-left-bg" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
-      <path d="M200 60L40 180V520H360V180L200 60Z" stroke="#fff" stroke-width="2" fill="none"/>
-      <path d="M150 520V340H250V520" stroke="#fff" stroke-width="2" fill="none"/>
-    </svg>
     <div style="position:relative;z-index:1;max-width:360px;">
       <h2>Verden venter.<br>Dit hjem er<br><em style="font-style:italic;">billetten.</em></h2>
       <p style="margin-top:16px;">Opret en gratis konto og byt bolig med familier over hele Danmark — og snart verden.</p>
@@ -101,8 +100,8 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         <div class="testimonial-author">
           <div class="t-avatar">TN</div>
           <div>
-            <div class="t-name">Thomas & Nina</div>
-            <div class="t-sub">Aarhus → Amsterdam · 4 bytter</div>
+            <div class="t-name">Thomas og Nina</div>
+            <div class="t-sub">Aarhus til Amsterdam · 4 bytter</div>
           </div>
         </div>
       </div>
@@ -112,34 +111,35 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
   <div class="page-right">
     <div class="form-box">
       <div class="form-tabs">
-        <div class="form-tab active" onclick="showTab('login')">Log ind</div>
-        <div class="form-tab" onclick="showTab('signup')">Opret konto</div>
+        <div class="form-tab active" id="tab-login" onclick="showTab('login')">Log ind</div>
+        <div class="form-tab" id="tab-signup" onclick="showTab('signup')">Opret konto</div>
       </div>
 
+      <!-- LOGIN -->
       <div id="panel-login">
         <h1 class="form-title">Velkommen tilbage</h1>
         <p class="form-sub">Log ind for at se dine bytter og beskeder</p>
+        <div id="login-msg" class="msg-box"></div>
         <div class="field">
           <label>Email</label>
           <input type="email" id="login-email" placeholder="din@email.dk">
         </div>
         <div class="field">
           <label>Adgangskode</label>
-          <input type="password" id="login-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginUser()">
+          <input type="password" id="login-password" placeholder="Adgangskode">
         </div>
-        <a href="#" class="forgot" onclick="event.preventDefault();resetPassword()">Glemt adgangskode?</a>
+        <span class="forgot" onclick="resetPassword()">Glemt adgangskode?</span>
         <button class="btn-full" id="login-btn" onclick="loginUser()">Log ind</button>
         <div class="divider"><div class="divider-line"></div><span>eller</span><div class="divider-line"></div></div>
-        <button class="btn-mitid">
-          <div class="mitid-logo">M</div>
-          Log ind med MitID
-        </button>
-        <p class="switch-text">Ny bruger? <a href="#" onclick="showTab('signup')">Opret gratis konto</a></p>
+        <button class="btn-mitid"><div class="mitid-logo">M</div>Log ind med MitID</button>
+        <p class="switch-text">Ny bruger? <a onclick="showTab('signup')">Opret gratis konto</a></p>
       </div>
 
+      <!-- SIGNUP -->
       <div id="panel-signup">
         <h1 class="form-title">Opret konto</h1>
-        <p class="form-sub">Gratis — ingen kreditkort kræves</p>
+        <p class="form-sub">Gratis — ingen kreditkort kraeves</p>
+        <div id="signup-msg" class="msg-box"></div>
         <div class="field-row">
           <div class="field">
             <label>Fornavn</label>
@@ -156,7 +156,7 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         </div>
         <div class="field">
           <label>Adgangskode</label>
-          <input type="password" id="signup-password" placeholder="Mindst 8 tegn">
+          <input type="password" id="signup-password" placeholder="Mindst 6 tegn">
         </div>
         <div class="field">
           <label>Gentag adgangskode</label>
@@ -164,159 +164,50 @@ nav { display: flex; align-items: center; justify-content: space-between; paddin
         </div>
         <button class="btn-full" id="signup-btn" onclick="signupUser()">Opret konto — det er gratis</button>
         <div class="divider"><div class="divider-line"></div><span>eller</span><div class="divider-line"></div></div>
-        <button class="btn-mitid">
-          <div class="mitid-logo">M</div>
-          Opret med MitID
-        </button>
-        <p class="terms">Ved at oprette en konto accepterer du vores <a href="#">vilkår</a> og <a href="#">privatlivspolitik</a></p>
-        <p class="switch-text">Har du allerede en konto? <a href="#" onclick="showTab('login')">Log ind</a></p>
+        <button class="btn-mitid"><div class="mitid-logo">M</div>Opret med MitID</button>
+        <p class="terms">Ved at oprette en konto accepterer du vores vilkaar og privatlivspolitik</p>
+        <p class="switch-text">Har du allerede en konto? <a onclick="showTab('login')">Log ind</a></p>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-function showTab(tab) {
-  document.querySelectorAll('.form-tab').forEach((t,i) => t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1)));
-  document.getElementById('panel-login').style.display = tab==='login' ? 'block' : 'none';
-  document.getElementById('panel-signup').style.display = tab==='signup' ? 'block' : 'none';
-}
-</script>
-
-
-<script>
-const { createClient } = supabase
-const _sb = createClient('https://dgsgugorolenijuqkajq.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY')
-
-// Check if already logged in
-_sb.auth.getSession().then({ data: { session } }) => {
-  if (session) window.location.href = 'profil.html'
-})
-
-async function loginUser() {
-  const email = document.querySelector('#login-email').value
-  const password = document.querySelector('#login-password').value
-  const btn = document.querySelector('#login-btn')
-  
-  if (!email || !password) return showError('login', 'Udfyld email og adgangskode')
-  
-  btn.textContent = 'Logger ind...'
-  btn.disabled = true
-
-  const { error } = await _sb.auth.signInWithPassword({ email, password })
-  
-  if (error) {
-    btn.textContent = 'Log ind'
-    btn.disabled = false
-    showError('login', 'Forkert email eller adgangskode')
-  } else {
-    window.location.href = 'profil.html'
-  }
-}
-
-async function signupUser() {
-  const firstName = document.querySelector('#signup-firstname').value.trim()
-  const lastName = document.querySelector('#signup-lastname').value.trim()
-  const email = document.querySelector('#signup-email').value.trim()
-  const password = document.querySelector('#signup-password').value
-  const password2 = document.querySelector('#signup-password2').value
-  const btn = document.querySelector('#signup-btn')
-
-  if (!firstName || !lastName || !email || !password) return showError('signup', 'Udfyld alle felter')
-  if (password !== password2) return showError('signup', 'Adgangskoderne matcher ikke')
-  if (password.length < 8) return showError('signup', 'Adgangskoden skal være mindst 8 tegn')
-
-  btn.textContent = 'Opretter konto...'
-  btn.disabled = true
-
-  const { error } = await _sb.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { first_name: firstName, last_name: lastName }
-    }
-  })
-
-  if (error) {
-    btn.textContent = 'Opret konto — det er gratis'
-    btn.disabled = false
-    showError('signup', error.message)
-  } else {
-    window.location.href = 'opret-bolig.html'
-  }
-}
-
-async function resetPassword() {
-  const email = document.querySelector('#login-email').value.trim()
-  if (!email) return showError('login', 'Skriv din email ovenfor først')
-  
-  const { error } = await _sb.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/reset-password.html'
-  })
-  
-  if (!error) showError('login', '✓ Tjek din email for et nulstillingslink', true)
-}
-
-function showError(panel, msg, success=false) {
-  let el = document.getElementById(panel + '-error')
-  if (!el) {
-    el = document.createElement('div')
-    el.id = panel + '-error'
-    el.style.cssText = 'padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;'
-    document.getElementById('panel-' + panel).insertBefore(el, document.getElementById(panel + '-btn').parentElement || document.getElementById(panel + '-btn'))
-  }
-  el.style.background = success ? 'var(--green-light)' : '#FEF0F0'
-  el.style.color = success ? 'var(--green-dark)' : 'var(--red)'
-  el.textContent = msg
-}
-</script>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SB_URL = 'https://dgsgugorolenijuqkajq.supabase.co'
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY'
-const { createClient } = supabase
-const _sb = createClient(SB_URL, SB_KEY)
+var _sb = supabase.createClient(
+  'https://dgsgugorolenijuqkajq.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY'
+)
 
 _sb.auth.getSession().then(function(res) {
-  if (res.data && res.data.session) window.location.href = 'profil.html'
+  if (res.data.session) window.location.href = 'profil.html'
 })
+
+function showTab(tab) {
+  document.getElementById('panel-login').style.display = tab === 'login' ? 'block' : 'none'
+  document.getElementById('panel-signup').style.display = tab === 'signup' ? 'block' : 'none'
+  document.getElementById('tab-login').className = 'form-tab' + (tab === 'login' ? ' active' : '')
+  document.getElementById('tab-signup').className = 'form-tab' + (tab === 'signup' ? ' active' : '')
+}
 
 function showMsg(id, msg, isSuccess) {
   var el = document.getElementById(id)
-  if (!el) {
-    el = document.createElement('div')
-    el.id = id
-    el.style.cssText = 'padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;text-align:center;'
-  }
-  el.style.background = isSuccess ? '#EDF4F0' : '#FEF0F0'
-  el.style.color = isSuccess ? '#1A3A28' : '#D94040'
   el.textContent = msg
-  return el
+  el.className = 'msg-box ' + (isSuccess ? 'success' : 'error')
 }
 
 function loginUser() {
   var email = document.getElementById('login-email').value.trim()
   var password = document.getElementById('login-password').value
   var btn = document.getElementById('login-btn')
-  var panel = document.getElementById('panel-login')
-
-  if (!email || !password) {
-    var m = showMsg('login-msg', 'Udfyld email og adgangskode', false)
-    if (!document.getElementById('login-msg')) panel.insertBefore(m, btn)
-    return
-  }
-
+  if (!email || !password) { showMsg('login-msg', 'Udfyld email og adgangskode', false); return }
   btn.textContent = 'Logger ind...'
   btn.disabled = true
-
   _sb.auth.signInWithPassword({ email: email, password: password }).then(function(res) {
     if (res.error) {
       btn.textContent = 'Log ind'
       btn.disabled = false
-      var m = showMsg('login-msg', 'Forkert email eller adgangskode', false)
-      if (!document.getElementById('login-msg')) panel.insertBefore(m, btn)
-      else document.getElementById('login-msg').textContent = 'Forkert email eller adgangskode'
+      showMsg('login-msg', 'Forkert email eller adgangskode', false)
     } else {
       window.location.href = 'profil.html'
     }
@@ -330,38 +221,24 @@ function signupUser() {
   var password = document.getElementById('signup-password').value
   var password2 = document.getElementById('signup-password2').value
   var btn = document.getElementById('signup-btn')
-  var panel = document.getElementById('panel-signup')
-
-  function showErr(msg) {
-    var existing = document.getElementById('signup-msg')
-    if (existing) { existing.textContent = msg; return }
-    var m = showMsg('signup-msg', msg, false)
-    panel.insertBefore(m, btn)
-  }
-
-  if (!firstName || !lastName || !email || !password) return showErr('Udfyld alle felter')
-  if (password !== password2) return showErr('Adgangskoderne matcher ikke')
-  if (password.length < 6) return showErr('Adgangskoden skal vaere mindst 6 tegn')
-
+  if (!firstName || !lastName || !email || !password) { showMsg('signup-msg', 'Udfyld alle felter', false); return }
+  if (password !== password2) { showMsg('signup-msg', 'Adgangskoderne matcher ikke', false); return }
+  if (password.length < 6) { showMsg('signup-msg', 'Adgangskoden skal vaere mindst 6 tegn', false); return }
   btn.textContent = 'Opretter konto...'
   btn.disabled = true
-
   _sb.auth.signUp({
     email: email,
     password: password,
     options: { data: { first_name: firstName, last_name: lastName } }
   }).then(function(res) {
+    console.log('Signup:', res)
     if (res.error) {
-      btn.textContent = 'Opret konto - det er gratis'
+      btn.textContent = 'Opret konto — det er gratis'
       btn.disabled = false
-      showErr(res.error.message)
+      showMsg('signup-msg', res.error.message, false)
     } else {
+      showMsg('signup-msg', 'Konto oprettet! Du sendes videre...', true)
       btn.textContent = 'Konto oprettet!'
-      btn.style.background = '#4A9B6F'
-      var m = showMsg('signup-msg', 'Konto oprettet! Du sendes videre...', true)
-      var existing = document.getElementById('signup-msg')
-      if (!existing) panel.insertBefore(m, btn)
-      else { existing.textContent = 'Konto oprettet! Du sendes videre...'; existing.style.background='#EDF4F0'; existing.style.color='#1A3A28' }
       setTimeout(function() { window.location.href = 'opret-bolig.html' }, 1500)
     }
   })
@@ -369,19 +246,11 @@ function signupUser() {
 
 function resetPassword() {
   var email = document.getElementById('login-email').value.trim()
-  var panel = document.getElementById('panel-login')
-  var btn = document.getElementById('login-btn')
-  if (!email) {
-    var m = showMsg('login-msg', 'Skriv din email ovenfor forst', false)
-    if (!document.getElementById('login-msg')) panel.insertBefore(m, btn)
-    return
-  }
-  _sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/reset-password.html' }).then(function() {
-    var m = showMsg('login-msg', 'Tjek din email for et nulstillingslink', true)
-    if (!document.getElementById('login-msg')) panel.insertBefore(m, btn)
+  if (!email) { showMsg('login-msg', 'Skriv din email ovenfor forst', false); return }
+  _sb.auth.resetPasswordForEmail(email).then(function() {
+    showMsg('login-msg', 'Tjek din email for et nulstillingslink', true)
   })
 }
 </script>
-
 </body>
 </html>

@@ -76,6 +76,16 @@ textarea:focus { border-color: var(--green-mid); }
   .overall-star { font-size: 36px; }
   .star { font-size: 28px; }
 }
+
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; background: var(--green-dark); border-radius: 8px; }
+.hamburger span { width: 22px; height: 2px; background: #fff; border-radius: 2px; display: block; }
+.mobile-menu { display: none; position: fixed; inset: 0; background: var(--cream); z-index: 999; flex-direction: column; justify-content: center; align-items: center; gap: 32px; }
+.mobile-menu.open { display: flex; }
+.mobile-menu a { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--ink); text-decoration: none; }
+.mobile-menu .close-btn { position: absolute; top: 24px; right: 24px; font-size: 28px; cursor: pointer; background: none; border: none; color: var(--ink); }
+.mobile-menu .m-cta { background: var(--green-dark); color: #fff !important; padding: 14px 36px; border-radius: 100px; font-size: 22px !important; }
+@media (max-width: 900px) { .hamburger { display: flex !important; } .nav-links { display: none !important; } .nav-right { display: none !important; } .nav-links a, .nav-right { display: none !important; } }
+
 </style>
 </head>
 <body>
