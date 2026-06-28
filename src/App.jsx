@@ -533,8 +533,8 @@ function CreatePropertyPage({ setPage, user }) {
       {step === 2 && (
         <div>
           <div style={{ background:'#fff', borderRadius:'20px', padding:'36px', border:'1px solid #E5E7EB', marginBottom:'16px' }}>
-            <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:'24px', marginBottom:'8px' }}>Hvornår vil du bytte?</h2>
-            <p style={{ color:'#6B7280', fontSize:'14px', marginBottom:'24px' }}>Din bolig vises kun i søgninger der matcher dine datoer.</p>
+            <h2 style={{ fontFamily:'DM Serif Display, serif', fontSize:'24px', marginBottom:'8px', color:'#111827' }}>Hvornår vil du bytte?</h2>
+            <p style={{ color:'#374151', fontSize:'14px', marginBottom:'24px' }}>Din bolig vises kun i søgninger der matcher dine datoer.</p>
             <div style={styles.fieldRow}>
               <div style={styles.field}><label style={styles.label}>Fra dato</label><input style={styles.input} type="date" value={form.from} onChange={e => update('from', e.target.value)}/></div>
               <div style={styles.field}><label style={styles.label}>Til dato</label><input style={styles.input} type="date" value={form.to} onChange={e => update('to', e.target.value)}/></div>
@@ -564,7 +564,7 @@ function CreatePropertyPage({ setPage, user }) {
 
 // ── STYLES ────────────────────────────────────────────────────────
 const styles = {
-  nav: { display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 48px', background:'#fff', borderBottom:'1px solid #E5E7EB', position:'sticky', top:0, zIndex:100, maxWidth:'100%' },
+  nav: { display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 48px', background:'#fff', borderBottom:'1px solid #E5E7EB', position:'sticky', top:0, zIndex:100 },
   navLinks: { display:'flex', alignItems:'center', gap:'20px' },
   navLink: { background:'none', border:'none', fontSize:'14px', color:'#6B7280', cursor:'pointer', fontFamily:'Inter, sans-serif' },
   navCta: { background:'linear-gradient(135deg,#4ECDC4,#3A7BFF,#7B4DFF)', color:'#fff', border:'none', borderRadius:'100px', padding:'10px 20px', fontSize:'14px', fontWeight:500, cursor:'pointer', fontFamily:'Inter, sans-serif' },
