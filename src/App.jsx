@@ -564,7 +564,7 @@ function CreatePropertyPage({ setPage, user }) {
 
 // ── STYLES ────────────────────────────────────────────────────────
 const styles = {
-  nav: { display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 48px', background:'#fff', borderBottom:'1px solid #E5E7EB', position:'sticky', top:0, zIndex:100 },
+  nav: { display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 48px', background:'#fff', borderBottom:'1px solid #E5E7EB', position:'sticky', top:0, zIndex:100, maxWidth:'100%' },
   navLinks: { display:'flex', alignItems:'center', gap:'20px' },
   navLink: { background:'none', border:'none', fontSize:'14px', color:'#6B7280', cursor:'pointer', fontFamily:'Inter, sans-serif' },
   navCta: { background:'linear-gradient(135deg,#4ECDC4,#3A7BFF,#7B4DFF)', color:'#fff', border:'none', borderRadius:'100px', padding:'10px 20px', fontSize:'14px', fontWeight:500, cursor:'pointer', fontFamily:'Inter, sans-serif' },
@@ -668,7 +668,7 @@ export default function App() {
   }, [page, user])
 
   return (
-    <div style={{ fontFamily:'Inter, sans-serif', background:'#F8F9FF', minHeight:'100vh', maxWidth:'1280px', margin:'0 auto', boxShadow:'0 0 60px rgba(0,0,0,0.08)' }}>
+    <div style={{ fontFamily:'Inter, sans-serif', background:'#F8F9FF', minHeight:'100vh' }}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&family=Poppins:wght@300;700&display=swap" rel="stylesheet"/>
       <Nav page={page} setPage={setPage} user={user} onLogout={logout}/>
       {page === 'home' && <HomePage setPage={setPage}/>}
