@@ -292,7 +292,7 @@ function SearchPage({ setPage }) {
   const colors = ['#4ECDC4','#3A7BFF','#7B4DFF','#00B4DB','#6B7FD7','#9B59B6']
 
   return (
-    <div style={{ padding:'32px 48px', maxWidth:'1280px', margin:'0 auto' }}>
+    <div style={{ padding:'32px 48px', margin:'0 auto' }}>
       <div style={{ display:'flex', gap:'12px', marginBottom:'24px', flexWrap:'wrap' }}>
         <input style={{ ...styles.input, flex:1, minWidth:'200px' }} placeholder="🔍  By, område eller land..." defaultValue="Danmark"/>
         <input style={{ ...styles.input, width:'160px' }} type="date" defaultValue="2025-07-01"/>
@@ -328,7 +328,7 @@ function SearchPage({ setPage }) {
 // ── PROPERTY PAGE ─────────────────────────────────────────────────
 function PropertyPage({ setPage }) {
   return (
-    <div style={{ maxWidth:'1280px', margin:'0 auto', padding:'40px 48px' }}>
+    <div style={{ margin:'0 auto', padding:'40px 48px' }}>
       <button style={styles.btnGhost} onClick={() => setPage('search')}>← Tilbage til søgning</button>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 380px', gap:'48px', marginTop:'24px', alignItems:'start' }}>
         <div>
@@ -591,7 +591,7 @@ const styles = {
   heroCardImg: { height:'160px', background:'linear-gradient(135deg,#4ECDC4,#3A7BFF)', width:'100%' },
   verifiedPill: { position:'absolute', bottom:'32px', left:'50%', transform:'translateX(-50%)', background:'#fff', borderRadius:'100px', padding:'10px 18px', display:'flex', alignItems:'center', gap:'8px', boxShadow:'0 4px 20px rgba(0,0,0,0.2)', whiteSpace:'nowrap', fontSize:'12px', fontWeight:500 },
   verifiedDot: { width:'8px', height:'8px', borderRadius:'50%', background:'#4ECDC4' },
-  section: { padding:'80px 48px', maxWidth:'1280px', margin:'0 auto' },
+  section: { padding:'80px 48px', margin:'0 auto' },
   sectionLabel: { fontSize:'11px', fontWeight:500, letterSpacing:'0.1em', textTransform:'uppercase', color:'#3A7BFF', marginBottom:'16px' },
   h2: { fontFamily:'DM Serif Display, serif', fontSize:'38px', lineHeight:1.1, letterSpacing:'-0.02em', color:'#111827', marginBottom:'40px' },
   stepsGrid: { display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'32px' },
