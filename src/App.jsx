@@ -6,6 +6,16 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRnc2d1Z29yb2xlbmlqdXFrYWpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTUyMTAsImV4cCI6MjA5Nzg3MTIxMH0.DqPez8m-c637a2B6T8UhROk9Qec-7Fz4jezzs22nZXY'
 )
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+  return isMobile
+}
+
 function Logo({ small }) {
   return (
     <svg width={small ? 120 : 160} height={small ? 40 : 53} viewBox="0 0 480 160" fill="none">
@@ -27,13 +37,14 @@ function Logo({ small }) {
 
 function Nav({ setPage, user, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const isMobile = useIsMobile()
   return (
     <>
       <nav style={s.nav}>
         <div style={{ cursor:'pointer', display:'flex', alignItems:'center' }} onClick={() => { setPage('home'); setMenuOpen(false) }}>
           <Logo small/>
         </div>
-        <div style={s.navLinks}>
+        <div style={{ ...s.navLinks, display: isMobile ? 'none' : 'flex' }}>
           <button style={s.navLink} onClick={() => setPage('search')}>Søg boliger</button>
           {user ? (
             <>
@@ -48,7 +59,7 @@ function Nav({ setPage, user, onLogout }) {
             </>
           )}
         </div>
-        <button style={s.hamburger} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+        <button style={{ ...s.hamburger, display: isMobile ? 'flex' : 'none' }} onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
           <span style={{ ...s.hLine, transform: menuOpen ? 'rotate(45deg) translate(5px,5px)' : 'none' }}></span>
           <span style={{ ...s.hLine, opacity: menuOpen ? 0 : 1 }}></span>
           <span style={{ ...s.hLine, transform: menuOpen ? 'rotate(-45deg) translate(5px,-5px)' : 'none' }}></span>
@@ -71,6 +82,7 @@ function Nav({ setPage, user, onLogout }) {
 }
 
 function HomePage({ setPage }) {
+  const isMobile = useIsMobile()
   const [email, setEmail] = useState('')
   const [waitlistMsg, setWaitlistMsg] = useState('')
 
@@ -85,8 +97,8 @@ function HomePage({ setPage }) {
   return (
     <div>
       {/* Hero */}
-      <div style={s.hero}>
-        <div style={s.heroLeft}>
+      <div style={{ ...s.hero, gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', minHeight: isMobile ? 'auto' : 'calc(100vh - 65px)' }}>
+        <div style={{ ...s.heroLeft, padding: isMobile ? '40px 20px' : '60px 48px' }}>
           <div style={s.eyebrow}><span style={s.eyebrowDot}></span>Boligbytte uden besvær</div>
           <h1 style={s.h1}>Dit hjem er <em style={s.h1Em}>dit</em> rejsebudget</h1>
           <p style={s.heroSub}>Byt bolig med familier der vil derhen, du vil hjem fra. Ingen penge. Ingen mellemled.</p>
@@ -103,7 +115,7 @@ function HomePage({ setPage }) {
             ))}
           </div>
         </div>
-        <div style={s.heroRight}>
+        <div style={{ ...s.heroRight, display: isMobile ? 'none' : 'flex' }}>
           <div style={s.heroCard}>
             <div style={{ height:'160px', background:'linear-gradient(135deg,#4ECDC4,#3A7BFF)' }}></div>
             <div style={{ padding:'16px' }}>
@@ -120,10 +132,10 @@ function HomePage({ setPage }) {
       </div>
 
       {/* How it works */}
-      <div style={s.section}>
+      <div style={{ ...s.section, padding: isMobile ? '48px 20px' : '60px 48px' }}>
         <div style={s.sectionLabel}>Sådan virker det</div>
         <h2 style={s.h2}>Fra sofa til Barcelona i fire trin</h2>
-        <div style={s.stepsGrid}>
+        <div style={{ ...s.stepsGrid, gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)' }}>
           {[
             ['01','Opret din bolig','Tilføj billeder og datoer. Gratis og under 10 minutter.'],
             ['02','Søg på datoer','Find boliger ledige præcis når du vil rejse.'],
@@ -143,7 +155,7 @@ function HomePage({ setPage }) {
       <div style={{ ...s.section, background:'#F0F2FF', padding:'60px 24px' }}>
         <div style={s.sectionLabel}>Priser</div>
         <h2 style={s.h2}>Byt gratis. Betal kun for mere.</h2>
-        <div style={s.pricingGrid}>
+        <div style={{ ...s.pricingGrid, gridTemplateColumns: isMobile ? '1fr' : 'repeat(3,1fr)' }}>
           {[
             { badge:'Gratis', badgeStyle:{ background:'#EEF0FB', color:'#1B2A5E' }, name:'Basis', amount:'0 kr.', period:'for altid', features:['En bolig med op til 5 billeder','Søg på datoer og område','Op til 3 aktive samtaler','Anmeldelser efter bytte'], btnStyle:s.btnOutline, btnLabel:'Kom i gang gratis' },
             { badge:'Mest populær', badgeStyle:{ background:'rgba(255,255,255,0.2)', color:'#fff' }, name:'Plus', amount:'79 kr.', period:'per måned · eller 599 kr./år', features:['Alt i Basis','Ubegrænsede samtaler','Op til 3 boliger','Op til 15 billeder','Avancerede filtre'], featured:true, btnStyle:s.btnWhite, btnLabel:'Prøv Plus' },
@@ -361,6 +373,7 @@ function PropertyPage({ setPage, property, user }) {
 }
 
 function MessagesPage() {
+  const isMobile = useIsMobile()
   const [msg, setMsg] = useState('')
   const [messages, setMessages] = useState([
     { mine:false, text:'Hej! Vi er interesserede i jeres bolig i juli 🙂', time:'10:14' },
@@ -379,8 +392,8 @@ function MessagesPage() {
   }
 
   return (
-    <div style={{ display:'grid', gridTemplateColumns:'280px 1fr', height:'calc(100vh - 65px)' }}>
-      <div style={{ borderRight:'1px solid #E5E7EB', background:'#fff', overflowY:'auto', display:'flex', flexDirection:'column' }}>
+    <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '280px 1fr', height:'calc(100vh - 65px)' }}>
+      <div style={{ borderRight:'1px solid #E5E7EB', background:'#fff', overflowY:'auto', display: isMobile ? 'none' : 'flex', flexDirection:'column' }}>
         <div style={{ padding:'16px', borderBottom:'1px solid #E5E7EB', fontWeight:600, fontSize:'16px' }}>Beskeder</div>
         {[['MH','Mette og Henrik','Hellerup → Aarhus',true],['TN','Thomas og Nina','Aarhus → Amsterdam',false]].map(([init,name,sub,active]) => (
           <div key={name} style={{ display:'flex', gap:'10px', padding:'14px 16px', borderBottom:'1px solid #E5E7EB', background:active?'#EEF0FB':'#fff', cursor:'pointer' }}>
@@ -710,7 +723,7 @@ const s = {
   heroSub: { fontSize:'16px', lineHeight:1.7, color:'#374151', maxWidth:'400px', marginBottom:'32px' },
   heroActions: { display:'flex', alignItems:'center', gap:'16px', flexWrap:'wrap' },
   trustRow: { display:'flex', alignItems:'center', gap:'24px', marginTop:'40px', paddingTop:'24px', borderTop:'1px solid #E5E7EB' },
-  trustNum: { fontFamily:'DM Serif Display, serif', fontSize:'24px', color:'#111827' },
+  trustNum: { fontFamily:'DM Serif Display, serif', fontSize:'22px', color:'#111827', whiteSpace:'nowrap' },
   trustLbl: { fontSize:'11px', color:'#6B7280', marginTop:'2px' },
   heroCard: { background:'#fff', borderRadius:'16px', overflow:'hidden', boxShadow:'0 16px 48px rgba(0,0,0,0.3)', width:'260px' },
   verifiedPill: { position:'absolute', bottom:'24px', left:'50%', transform:'translateX(-50%)', background:'#fff', borderRadius:'100px', padding:'8px 16px', display:'flex', alignItems:'center', gap:'8px', boxShadow:'0 4px 20px rgba(0,0,0,0.2)', whiteSpace:'nowrap', fontSize:'12px', fontWeight:500 },
